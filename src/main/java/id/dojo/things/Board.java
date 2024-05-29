@@ -46,6 +46,8 @@ public class Board extends Thing {
         }
     }
 
+
+    //meletakkan bnda dalam cell
     public void putObject(Points point, Thing thing){
         if (thing != null){
             //akses row n col -> inputBenda

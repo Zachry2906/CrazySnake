@@ -32,7 +32,7 @@ public class Cell extends Thing{
         if (thing != null) {
             System.out.print(thing.getAppearance());
         } else {
-            System.out.print("   ");
+            System.out.print("  ");
         }
     }
 

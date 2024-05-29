@@ -5,7 +5,7 @@ public class Wall extends Thing {
     private int column;
 
     public Wall(int row, int column) {
-        super("Wall", "*");
+        super("Wall", " *");
         this.row = row;
         this.column = column;
     }
