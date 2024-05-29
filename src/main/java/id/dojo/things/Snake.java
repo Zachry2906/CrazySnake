@@ -120,8 +120,8 @@ public class Snake extends Thing implements AnimalBehavior{
         row = board.getRow();
         column = board.getCol();
         board.putObject(head, null);
-        for (Points bodPos : body) {
-            board.putObject(bodPos, null);
+        for (Points bodPosisi : body) {
+            board.putObject(bodPosisi, null);
         }
 
         int oldX = head.getX();
@@ -169,8 +169,8 @@ public class Snake extends Thing implements AnimalBehavior{
     @Override
     public void turnLeft(Board board) {
         board.putObject(head, null);
-        for (Points bodPos : body) {
-            board.putObject(bodPos, null);
+        for (Points bodPosisi : body) {
+            board.putObject(bodPosisi, null);
         }
     
         Points oldHead = new Points(head.getX(), head.getY());
@@ -244,8 +244,8 @@ public class Snake extends Thing implements AnimalBehavior{
     public void turnRight(Board board) {
         // Remove crnt positions from the board
         board.putObject(head, null);
-        for (Points bodPos : body) {
-            board.putObject(bodPos, null);
+        for (Points bodPosisi : body) {
+            board.putObject(bodPosisi, null);
         }
     
         Points oldHead = new Points(head.getX(), head.getY());

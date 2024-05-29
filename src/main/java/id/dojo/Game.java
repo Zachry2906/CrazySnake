@@ -16,8 +16,6 @@ public class Game {
     private List<Wall> walls;
     private Snake snake;
     private int speed;
-    private int currentDirection; // 0 = atas, 1 = kanan, 2 = bawah, 3 = kiri
-    private int previousDirection;
 
     public Game(Builder build) {
         this.board = build.board;
@@ -40,7 +38,6 @@ public class Game {
                     System.out.println("Lurus");
                     snake.stepForward(board);
                 } else {
-                    // Dapatkan arah acak baru yang berbeda dari arah sebelumnya
                     getNewDirection();
                 }
                 break;
@@ -68,8 +65,6 @@ public class Game {
                 }
                 break;
         }
-
-        // Memberikan jeda waktu untuk animasi gerakan
         Thread.sleep(50);
 
             new ProcessBuilder("clear").inheritIO().start().waitFor();
