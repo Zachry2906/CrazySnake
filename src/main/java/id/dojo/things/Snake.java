@@ -11,10 +11,9 @@ public class Snake extends Thing implements AnimalBehavior{
     private Points head;
     private int size;
     private List<Points> body;
-    private int row;
-    private int column;
-    private int atasbawah = 1; // 1 = atas, 2 = bawah
-    private int kanankiri = 1; // 0 = atas, 1 = kanan, 2 = bawah, 3 = kiri
+    static public int row;
+    static public int column;
+    static String direction = "kiri";
 
     public Snake(Builder builder) {
         super(builder.getName(), builder.getAppearance());
@@ -25,8 +24,9 @@ public class Snake extends Thing implements AnimalBehavior{
 
     public void generateBody(){
         int x = head.getX();
+        int y = head.getY();
         for (int i = 1; i < size; i++) {
-            body.add(new Points(x, head.getY() - i));
+            body.add(new Points(x, ++y));
         }
     }
 
@@ -102,35 +102,63 @@ public class Snake extends Thing implements AnimalBehavior{
 
     @Override
     public Points checkForward() {
-        if (head.getX() == 28) { // Kepala ular berada di baris 24 (batas bawah)
-            return null;
-        } else if (head.getY() == 28 && head.getX() + 1 != 1) { // Kepala ular berada di batas kanan
-            return null;
-        } else  if (head.getX() == 1) { // Kepala ular berada di baris 0 (batas atas)
-            return null;
-        } else if (head.getY() == 1) { // Kepala ular berada di batas kiri
-            return null;
-        } else {
-            return new Points(head.getX(), head.getY() + 1);
-        }
+
+        int xPos = 0;
+        int yPos = 0;
+
+        // ke selatan
+        if (head.getX() == 28 && head.getY()== 1){
+            if (direction.equals("kiri")){
+                xPos = head.getX();
+                yPos = head.getY() + 1;
+            } else {
+                xPos = head.getX() - 1;
+                yPos = head.getY();
+            }
+        } else if (head.getX() - 1 == body.getFirst().getX()){
+            xPos = head.getX() + 1;
+            yPos = head.getY();
+            // ke timur
+        } else if (head.getY() - 1 == body.getFirst().getY()){
+            xPos = head.getX();
+            yPos = head.getY() + 1;
+            //ke barat
+        } else if (head.getY() + 1 == body.getFirst().getY()){
+            xPos = head.getX();
+            yPos = head.getY() - 1;
+            //keutara
+        } else if (head.getX() == 1 && head.getY() == 28) {
+            if (direction.equals("kiri")){
+                xPos = head.getX();
+                yPos = head.getY() - 1;
+            } else {
+                xPos = head.getX() + 1;
+                yPos = head.getY();
+            }
+        }else if (head.getX() + 1 == body.getFirst().getX()){
+            xPos = head.getX() - 1;
+            yPos = head.getY() ;
+        } 
+        
+
+        return new Points(xPos, yPos);
     }
     
     @Override
     public void stepForward(Board board) {
-        row = board.getRow();
         column = board.getCol();
+        row = board.getRow();
+        Points position = checkForward();
         board.putObject(head, null);
         for (Points bodPosisi : body) {
             board.putObject(bodPosisi, null);
         }
 
-        int oldX = head.getX();
-        int oldY = head.getY();
-    
         Points oldHead = new Points(head.getX(), head.getY());
-        head.setY(head.getY() + 1);
+        head.setX(position.getX());
+        head.setY(position.getY());
         board.putObject(head, this);
-    
+
         Points prev = oldHead;
         for (int i = 0; i < body.size(); i++) {
             Points crnt = body.get(i);
@@ -141,72 +169,56 @@ public class Snake extends Thing implements AnimalBehavior{
             board.putObject(crnt, this);
         }
 
-        if (head.getY() == oldY && head.getX() > oldX) {
-            atasbawah = 1;
-        } else if (head.getY() == oldY && head.getX() < oldX) {
-            atasbawah = 2;
-        }
     }
     
     @Override
     public Points checkLeft() {
-        if (head.getX() == 1 && head.getY() == 1) {
-            head.setX(head.getX() + 1);
-                return new Points(head.getX(), head.getY() - 1); 
-        } else if (head.getY() == 28 && head.getX() == 28){
-            if (kanankiri == 1 || kanankiri == 2) { 
-                return new Points(head.getX(), head.getY() + 1); 
-            } else { 
-                return null; 
-            }
-        } else if (head.getX() == 28 && head.getY() != 1) {
-            return null;
+        int xPos = 0;
+        int yPos = 0;
+
+        // selatan
+        if (head.getX() - 1 == body.getFirst().getX()) {
+            System.out.println("dari utara");
+            xPos = head.getX();
+            yPos = head.getY() + 1; // Mengubah head.getY() + 1 menjadi head.getY() - 1
+            //selatan
+        } else if (head.getY() - 1 == body.getFirst().getY()) {
+            System.out.println("dari timur");
+            xPos = head.getX() - 1;
+            yPos = head.getY();
+            //barat
+        } else if (head.getY() + 1 == body.getFirst().getY()) {
+            System.out.println("dari barat");
+            xPos = head.getX() + 1; // Mengubah head.getX() menjadi head.getX() + 1
+            yPos = head.getY();
+            //timur
+        } else if (head.getX() + 1 == body.getFirst().getX()) {
+            System.out.println("dari selatan");
+            xPos = head.getX();
+            yPos = head.getY() + 1; // Mengubah head.getY() - 1 menjadi head.getY() + 1
+            //utara
+        } 
+        if (xPos >= 0 && xPos < column && yPos >= 0 && yPos < row) {
+            return new Points(xPos, yPos);
         } else {
-            return new Points(head.getX(), head.getY() - 1);
+            System.out.println("out of bound");
+            return null;
         }
     }
-    
+
     @Override
     public void turnLeft(Board board) {
+        Points position = checkLeft();
         board.putObject(head, null);
         for (Points bodPosisi : body) {
             board.putObject(bodPosisi, null);
         }
-    
-        Points oldHead = new Points(head.getX(), head.getY());
-        if (head.getY() == 28 && head.getX() == 1) { 
-            head.setY(head.getY() - 1);
-        } else if (head.getY() == column - 2 && head.getX() == column - 2) {
-            head.setY(head.getY() - 1);
-        } else if (head.getY() == column - 2 && head.getX() != 1) {
-            head.setX(head.getX() - 1);
-            kanankiri = 2;
-        }  else if (head.getX() == 1 && head.getY() != 28) {
-            head.setY(head.getY() - 1);
-        } else if (head.getY() == 1) {
-            head.setX(head.getX() + 1);
-        } else if (head.getX() == 1 && head.getY() == 1){
-            head.setX(head.getX() + 1);
-        } else {
-            Random random = new Random();
-            int arah = random.nextInt(2);
 
-            if (kanankiri == 1) {
-                if (arah == 1 ) {
-                    head.setX(head.getX() - 1);
-                } else if (arah == 2 || arah == 0) {
-                    head.setY(head.getY() - 1);
-                }
-            } else {
-                if (arah == 1 ) {
-                    head.setX(head.getX() + 1);
-                } else if (arah == 2 || arah == 0) {
-                    head.setY(head.getY() + 1);
-                }
-            }
-        }
-                board.putObject(head, this);
-    
+        Points oldHead = new Points(head.getX(), head.getY());
+        head.setX(position.getX());
+        head.setY(position.getY());
+        board.putObject(head, this);
+
         Points prev = oldHead;
         for (int i = 0; i < body.size(); i++) {
             Points crnt = body.get(i);
@@ -216,71 +228,58 @@ public class Snake extends Thing implements AnimalBehavior{
             prev = temp;
             board.putObject(crnt, this);
         }
-        kanankiri = 1;
+
+        direction = "kiri";
     }
-    
+
     @Override
     public Points checkRight() {
-        if (head.getX() == 1 && head.getY() == 1) {
-            if (kanankiri == 1) { 
-                return new Points(head.getX(), head.getY() - 1); 
-            } else { 
-                return null;
-            }
-        } else if (head.getY() == 28 && head.getX() == 28) {
-            if (kanankiri == 1) { 
-                return new Points(head.getX(), head.getY() + 1); 
-            } else { 
-                return null; 
-            }
-        } else if (head.getY() == 28 && head.getX() != 1) {
-            return null;
+        
+        int xPos = 0;
+        int yPos = 0;
+        
+        // ke selatan
+        if (head.getX() - 1 == body.getFirst().getX()){
+            xPos = head.getX();
+            yPos = head.getY() - 1;
+        //timur
+        } else if (head.getY() - 1 == body.getFirst().getY()){
+            xPos = head.getX() + 1; // Mengubah head.getX() menjadi head.getX() + 1
+            yPos = head.getY();
+        //barat
+        } else if (head.getY() + 1 == body.getFirst().getY()){
+            xPos = head.getX() - 1; // Mengubah head.getX() menjadi head.getX() - 1
+            yPos = head.getY();
+        //utara
+        } else if (head.getX() + 1 == body.getFirst().getX()){
+            xPos = head.getX();
+            yPos = head.getY() + 1;
         } else {
-            return new Points(head.getX(), head.getY() + 1);
+            xPos = head.getX();
+            yPos = head.getY();
+        }
+        
+        if (xPos >= 0 && xPos < column && yPos >= 0 && yPos < row) {
+            return new Points(xPos, yPos);
+        } else {
+            System.out.println("out of bound");
+            return null;
         }
     }
-    
+
     @Override
     public void turnRight(Board board) {
-        // Remove crnt positions from the board
+        Points position = checkRight();
         board.putObject(head, null);
         for (Points bodPosisi : body) {
             board.putObject(bodPosisi, null);
         }
-    
-        Points oldHead = new Points(head.getX(), head.getY());
-        if (head.getX() == 28 && head.getY() != 1) { 
-            head.setX(head.getX() - 1);
-            kanankiri = 1;
-        } else 
-        if (head.getY() == column - 2 && head.getX() == column - 2) {
-            head.setY(head.getX() + 1);
-        } else if (head.getY() == column - 2) {
-            head.setX(head.getX() + 1);
-        } else if (head.getX() == 1  && head.getY() != 28) {
-            head.setY(head.getY() - 1);
-        } else if(head.getY() == 1 && head.getX() == 1) {
-            head.setX(head.getX() + 1);
-        } else {
-            Random random = new Random();
-            int arah = random.nextInt(2);
 
-            if (kanankiri == 2) {
-                if (arah == 1 ) {
-                    head.setX(head.getX() - 1);
-                } else if (arah == 2 || arah == 0) {
-                    head.setY(head.getY() + 1);
-                }
-            } else {
-                if (arah == 1 ) {
-                    head.setX(head.getX() + 1);
-                } else if (arah == 2 || arah == 0) {
-                    head.setY(head.getY() - 1);
-                }
-            }
-        }
+        Points oldHead = new Points(head.getX(), head.getY());
+        head.setX(position.getX());
+        head.setY(position.getY());
         board.putObject(head, this);
-    
+
         Points prev = oldHead;
         for (int i = 0; i < body.size(); i++) {
             Points crnt = body.get(i);
@@ -290,7 +289,7 @@ public class Snake extends Thing implements AnimalBehavior{
             prev = temp;
             board.putObject(crnt, this);
         }
-        kanankiri = 2;
+        direction = "kanan";
     }
 
     

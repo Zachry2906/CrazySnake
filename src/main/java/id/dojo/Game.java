@@ -24,59 +24,51 @@ public class Game {
         this.snake = build.snake;
     }
 
+    public Board getBoard() {
+        return board;
+    }
+
     public void render() throws InterruptedException, IOException {
         while (true){
             board.displayBoard();
-        // Memeriksa apakah ular bisa bergerak maju
-        switch (getNewDirection()) {
-            case 0:
-            case 4:
-            case 5:
-            case 6:
-             // Atas
-                if (snake.checkForward() != null) {
-                    System.out.println("Lurus");
-                    snake.stepForward(board);
-                } else {
-                    getNewDirection();
-                }
-                break;
-            case 1:
-            case 2:
-            case 8:
-             // Kanan
-                if (snake.checkRight() != null) {
-                    System.out.println("Kanan");
-                    snake.turnRight(board);
-                } else {
-                    getNewDirection();
-                }
-                break;
-            case 3:
-            case 9:
-            case 7:
-            case 10:
-             // Kiri
-                if (snake.checkLeft() != null) {
-                    System.out.println("Kiri");
-                    snake.turnLeft(board);
-                } else {
-                    getNewDirection();
-                }
-                break;
-        }
-        Thread.sleep(50);
+//            autoMovement();
+            snake.stepForward(board);
+        Thread.sleep(300);
 
             new ProcessBuilder("clear").inheritIO().start().waitFor();
         }
     }
 
-    private int getNewDirection() {
-    Random random = new Random();
-    int newDirection = random.nextInt(10);
-    System.out.println("newDirection: " + newDirection);
-    return newDirection;
+    private Random random = new Random();
+
+    public void autoMovement() {
+        snake.stepForward(board);
+        Points forward = snake.checkForward();
+        Cell forwardCell = board.getBoard().get(forward.getX()).get(forward.getY());
+        if (forwardCell.getThing() == null) {
+            snake.stepForward(board);
+        } else {
+            Points left = snake.checkLeft();
+            Cell leftCell = board.getBoard().get(left.getX()).get(left.getY());
+    
+            Points right = snake.checkRight();
+            Cell rightCell = board.getBoard().get(right.getX()).get(right.getY());
+    
+            if (leftCell.getThing() == null && rightCell.getThing() == null) {
+                // Both left and right are valid moves
+                if (random.nextBoolean()) {
+                    snake.turnLeft(board);
+                } else {
+                    snake.turnRight(board);
+                }
+            } else if (leftCell.getThing() == null) {
+                snake.turnLeft(board);
+            } else if (rightCell.getThing() == null) {
+                snake.turnRight(board);
+            } 
+        }
     }
+
 
     public static Builder getBuilder() {
         return new Builder();

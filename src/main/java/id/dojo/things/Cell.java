@@ -19,6 +19,10 @@ public class Cell extends Thing{
         return col;
     }
 
+    public Thing getThing() {
+        return thing;
+    }
+
     public void addThing(Thing thing) {
         this.thing = thing;
     }
