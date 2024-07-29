@@ -27,7 +27,7 @@ git clone https://github.com/Zachry2906/CrazySnake.git
 java -cp . -Djava.library.path=lib src/main/java/id/dojo/Run.java
 ```
 
-**Notes : every and any changes inside C++ code must be compile with command below (because i'm using linux so i'm gonna be demonstrate it with linux commmand)** 
+**Notes : every and any changes inside C++ code must be compile with command below (because i'm using linux so i'm gonna be demonstrate it with linux commmand)** [source](https://www.baeldung.com/jni)
 
 1. Create JAVA_HOME variable and assign it with JDK path in your local
 ``` bash
